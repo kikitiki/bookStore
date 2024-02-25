@@ -27,6 +27,7 @@ public class BookController {
     public String bookRegister(){
         return "bookRegister";
     }
+
     @GetMapping("/avaliable_books")
     public ModelAndView getAllBook(){
         List<Book> list = bookService.getAllBooks();
@@ -41,12 +42,23 @@ public class BookController {
             bookService.save(book);
             return "redirect:/avaliable_books";
     }
+    @PostMapping("/saveAll")
+    public String editBook(@ModelAttribute Book book){
+        bookService.saveAllBook((List<Book>) book);
+        return "redirect:/avaliable_books";
+    }
+
+//    @GetMapping("/my_books")
+//    public String getMyBooks(Model model){
+//        List<MyBookList> list =myBookListService.getAllMyBooks();
+//        model.addAttribute("myBooks",list);
+//        return "myBooks";
+//    }
 
     @GetMapping("/my_books")
-    public String getMyBooks(Model model){
-        List<MyBookList> list =myBookListService.getAllMyBooks();
-        model.addAttribute("book",list);
-        return "myBooks";
+    public ModelAndView getMyBooks(){
+        List<Book> list = bookService.getAllBooks();
+        return  new ModelAndView("bookList","book",list);
     }
     @RequestMapping("/mylist/{id}")
     public String getMyList(@PathVariable("id") int id){
@@ -60,8 +72,13 @@ public class BookController {
     public String editBook(@PathVariable("id") int id,Model model){
         Book book = bookService.getBookById(id);
         model.addAttribute("book",book);
+        List<MyBookList> list = myBookListService.getAllMyBooks();
+        model.addAttribute("myBooks", list);
         return "editBook";
     }
+
+
+
 
     @RequestMapping("/deleteBook/{id}")
     public String deleteBook(@PathVariable("id")int id){
